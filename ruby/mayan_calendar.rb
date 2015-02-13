@@ -61,6 +61,30 @@ class MayanCalendar
     def to_s
       "#{long_count.to_s} #{tzolkin.to_s} / #{haab.to_s}"
     end
+    # Calculate Posterior Distance Number
+    def iuti(lc_reverse_array)
+      kin,winal,tun,katun,baktun,piktun = lc_reverse_array
+      self.class.create_by_long_count([
+        long_count.piktun + (piktun || 0),
+        long_count.baktun + (baktun || 0),
+        long_count.katun  + (katun || 0),
+        long_count.tun    + (tun || 0),
+        long_count.winal  + (winal || 0),
+        long_count.kin    + (kin || 0)
+      ])
+    end
+    # Calculate Anterior Distance Number
+    def utiiy(lc_reverse_array)
+      kin,winal,tun,katun,baktun,piktun = lc_reverse_array
+      self.class.create_by_long_count([
+        long_count.piktun - (piktun || 0),
+        long_count.baktun - (baktun || 0),
+        long_count.katun  - (katun || 0),
+        long_count.tun    - (tun || 0),
+        long_count.winal  - (winal || 0),
+        long_count.kin    - (kin || 0)
+      ])
+    end
     private
     def initlalize; end
   end
