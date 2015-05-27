@@ -64,26 +64,28 @@ class MayanCalendar
     # Calculate Posterior Distance Number
     def iuti(lc_reverse_array)
       kin,winal,tun,katun,baktun,piktun = lc_reverse_array
+      lc_piktun = piktun || 0
+      lc_baktun = baktun || 0
+      lc_katun  = katun || 0
+      lc_tun    = tun || 0
+      lc_winal  = winal || 0
+      lc_kin    = kin || 0
+      new_lc = @long_count.reorganize(true, lc_piktun, lc_baktun, lc_katun, lc_tun, lc_winal, lc_kin)
       self.class.create_by_long_count([
-        long_count.piktun + (piktun || 0),
-        long_count.baktun + (baktun || 0),
-        long_count.katun  + (katun || 0),
-        long_count.tun    + (tun || 0),
-        long_count.winal  + (winal || 0),
-        long_count.kin    + (kin || 0)
-      ])
+        new_lc.piktun, new_lc.baktun, new_lc.katun, new_lc.tun, new_lc.winal, new_lc.kin ])
     end
     # Calculate Anterior Distance Number
     def utiiy(lc_reverse_array)
       kin,winal,tun,katun,baktun,piktun = lc_reverse_array
+      lc_piktun = piktun || 0
+      lc_baktun = baktun || 0
+      lc_katun  = katun || 0
+      lc_tun    = tun || 0
+      lc_winal  = winal || 0
+      lc_kin    = kin || 0
+      new_lc = @long_count.reorganize(false, lc_piktun, lc_baktun, lc_katun, lc_tun, lc_winal, lc_kin)
       self.class.create_by_long_count([
-        long_count.piktun - (piktun || 0),
-        long_count.baktun - (baktun || 0),
-        long_count.katun  - (katun || 0),
-        long_count.tun    - (tun || 0),
-        long_count.winal  - (winal || 0),
-        long_count.kin    - (kin || 0)
-      ])
+        new_lc.piktun, new_lc.baktun, new_lc.katun, new_lc.tun, new_lc.winal, new_lc.kin ])
     end
     private
     def initlalize; end
@@ -117,6 +119,15 @@ class LongCount
     [piktun, baktun, katun, tun, winal, kin].join('.') if format == :include_piktun
     [baktun, katun, tun, winal, kin].join('.')
   end
+	def reorganize(plus_or_minus, piktun, baktun, katun, tun, winal, kin)
+		ttl = piktun * C_PIKTUN + baktun * C_BAKTUN + katun * C_KATUN +
+					tun * C_TUN + winal * C_WINAL + kin
+		if plus_or_minus
+			self.class.to_long_count(date: @date + ttl)
+		else
+			self.class.to_long_count(date: @date - ttl)
+		end
+	end
   def self.to_long_count(date: Date.today)
     base_julian = (date - ORIGIN_J_GMT_584283).to_i
     arr = []
